@@ -97,6 +97,8 @@ const hsSeries = () => ({name:"沪深300", color:COLORS.HS, dash:true, points:D.
 const tradeCols = [["买入日","buy_date"],["代码","code"],["名称","name"],["买价","buy"],["股数","qty"],["卖出日","sell_date"],["卖价","sell"],
   ["盈亏","pnl",r=>sgn(+r.pnl),r=>+r.pnl],["收益率","",r=>pct(r.sell/r.buy-1),r=>r.sell/r.buy-1],["退出原因","exit_reason"],["开仓类型","entry_type"]];
 
+const rvTag = c => c.review ? `<span class="tag ${c.review.decision=='否决'?'force':'auto'}" title="${esc(c.review.reason)}">复核${c.review.decision}</span><span class="mute">${esc(c.review.reason)}</span>` : "";
+const rvHead = s => { const r = s.review||{}; if (!s.pending_buy.length) return ""; return `<div style="margin:4px 0"><span class="tag ${r.status=='已复核'?'auto':'force'}">${esc(r.status||'待复核')}</span>${r.time?`<span class="mute">${esc(r.time)}</span>`:''}${r.summary?`<div class="mute">${esc(r.summary)}</div>`:''}</div>`; };
 // ---------------- 页面 ----------------
 const PAGES = {
   "总览": () => {
@@ -118,12 +120,12 @@ const PAGES = {
       ["平均盈利","",r=>sgn(r.stats.avg_win)],["平均亏损","",r=>sgn(r.stats.avg_loss)],["盈亏比","",r=>r.stats.payoff?num(r.stats.payoff):"—"],["已实现合计","",r=>sgn(r.stats.total)]], S));
   },
   "明日指令": () => {
-    let h = `<section><h2>下一交易日指令（${D.as_of} 收盘生成）</h2><p class="mute">卖出：开盘 09:30–10:00 市价；买入：14:30–15:00，沿顺延链只买 1 只（开盘涨幅>5%、超最高买价或封涨停则顺延）。</p><div class="grid g5">`;
+    let h = `<section><h2>下一交易日指令（${D.as_of} 收盘生成）</h2><p class="mute">个股复核（方案A）：计划生成后为“待复核”，Kiro 复核写回后为“已复核”，被否决的股票不买；14:25 前未复核则按公式执行。卖出：开盘 09:30–10:00 市价；买入：14:30–15:00，沿顺延链只买 1 只（开盘涨幅>5%、超最高买价或封涨停则顺延）。</p><div class="grid g5">`;
     for (const s of D.studios) {
       h += `<div class="card" style="border-top:3px solid ${COLORS[s.id]}"><h3>${s.id} ${esc(s.name)}</h3><div class="mute">开盘卖出</div>`;
       h += s.pending_sell.length ? s.pending_sell.map(o=>`<div>▸ <b>${o.code}</b> ${esc(o.name)} <span class="down">${esc(o.reason)}</span></div>`).join("") : `<div class="mute">无</div>`;
-      h += `<div class="mute" style="margin-top:8px">14:30 买入顺延链</div>`;
-      h += s.pending_buy.length ? s.pending_buy.map((c,i)=>`<div>${i+1}. <b>${c.code}</b> ${esc(c.name)} ≤${c.max_buy} <span class="tag ${c.type=='自主'?'auto':'force'}">${c.type}</span><span class="tag ${c.layer=='新批'?'new':''}">${c.layer}</span><span class="mute">${c.score}</span></div>`).join("") : `<div class="mute">不开仓${s.params.must_open===false?'（本组只做自主开仓，今日无信号）':'（无过硬门标的）'}</div>`;
+      h += `<div class="mute" style="margin-top:8px">14:30 买入顺延链</div>` + rvHead(s);
+      h += s.pending_buy.length ? s.pending_buy.map((c,i)=>`<div>${i+1}. <b>${c.code}</b> ${esc(c.name)} ≤${c.max_buy} <span class="tag ${c.type=='自主'?'auto':'force'}">${c.type}</span><span class="tag ${c.layer=='新批'?'new':''}">${c.layer}</span><span class="mute">${c.score}</span> ${rvTag(c)}</div>`).join("") : `<div class="mute">不开仓${s.params.must_open===false?'（本组只做自主开仓，今日无信号）':'（无过硬门标的）'}</div>`;
       h += `</div>`;
     }
     h += `</div></section><section><h2>每日计划存档</h2><div class="sub" id="plansub"></div><div class="doc" id="plandoc"></div></section>`;
@@ -194,7 +196,7 @@ function studioPage(s) {
     "持仓与指令": el => {
       el.innerHTML = `<section><h2>当前持仓（${s.positions.length} 只，仓位 ${(s.positions.reduce((a,p)=>a+p.weight,0)*100).toFixed(1)}%）</h2><div id="x1"></div></section>
         <section><h2>下一交易日</h2><div class="grid g2"><div class="card"><h3>开盘卖出</h3>${s.pending_sell.length?s.pending_sell.map(o=>`<div>▸ <b>${o.code}</b> ${esc(o.name)} <span class="down">${esc(o.reason)}</span></div>`).join(""):'<span class="mute">无</span>'}</div>
-        <div class="card"><h3>14:30 买入顺延链</h3>${s.pending_buy.length?s.pending_buy.map((c,i)=>`<div>${i+1}. <b>${c.code}</b> ${esc(c.name)} 最高买价 ${c.max_buy}（信号收盘 ${c.signal_close}） <span class="tag ${c.type=='自主'?'auto':'force'}">${c.type}</span><span class="tag ${c.layer=='新批'?'new':''}">${c.layer}</span> 综合${c.score}</div>`).join(""):'<span class="mute">不开仓</span>'}</div></div></section>`;
+        <div class="card"><h3>14:30 买入顺延链</h3>${rvHead(s)}${s.pending_buy.length?s.pending_buy.map((c,i)=>`<div>${i+1}. <b>${c.code}</b> ${esc(c.name)} 最高买价 ${c.max_buy}（信号收盘 ${c.signal_close}） <span class="tag ${c.type=='自主'?'auto':'force'}">${c.type}</span><span class="tag ${c.layer=='新批'?'new':''}">${c.layer}</span> 综合${c.score} ${rvTag(c)}</div>`).join(""):'<span class="mute">不开仓</span>'}</div></div></section>`;
       el.querySelector("#x1").append(table("p", [["代码","code"],["名称","name"],["买入日","date"],["股数","qty"],["成本","cost"],["现价","last"],["市值","mv",r=>num(r.mv)],["仓位","weight",r=>pct(r.weight,1)],
         ["浮盈亏","pnl",r=>sgn(r.pnl)],["浮盈亏%","pnl_pct",r=>pct(r.pnl_pct)],["止损价","",r=>num(r.cost*(s.params.stop||.95))],["类型","type"]], s.positions));
     },

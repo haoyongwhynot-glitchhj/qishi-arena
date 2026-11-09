@@ -72,32 +72,63 @@ def settle_studio(s, date, idx):
     L["pending_sell"] = keep
     # 2) 14:30 买入（顺延链只成交 1 只）
     nav_prev = L["nav"]
-    for c in L.get("pending_buy", []):
-        b, prev = bar_on(c["code"], date)
-        if not b or not prev:
-            log.append(f"跳过 {c['name']}：无行情"); continue
-        if b["open"] / c["signal_close"] - 1 > p.get("gap_skip", 0.05):
-            log.append(f"跳过 {c['name']}：开盘涨幅 {b['open'] / c['signal_close'] - 1:+.1%} > 5%"); continue
-        px = minute_price(c["code"], date); proxy = px is None
-        px = b["close"] if proxy else px
-        up = round(c["signal_close"] * (1 + limit_pct(c["code"]) / 100), 2)
-        if px > c["max_buy"]:
-            log.append(f"跳过 {c['name']}：14:30 价 {px} > 最高买价 {c['max_buy']}"); continue
-        if px >= up - 0.005:
-            log.append(f"跳过 {c['name']}：封涨停不可买"); continue
-        q = int(nav_prev * p.get("position", 0.10) / c["max_buy"] / 100) * 100
-        amt = q * px; cost_total = amt + fees(amt, False)
-        if q == 0 or cost_total > L["cash"]:
-            log.append(f"跳过 {c['name']}：现金不足"); continue
+    held = {h["code"] for h in L["positions"]}
+
+    def first_fill(chain, cash, notes):
+        """沿顺延链找第一只可成交的；返回 (候选, 成交价, 是否收盘代理, 股数, 总成本) 或 None。"""
+        for c in chain:
+            if c["code"] in held:
+                continue
+            b, prev = bar_on(c["code"], date)
+            if not b or not prev:
+                notes.append(f"跳过 {c['name']}：无行情"); continue
+            if b["open"] / c["signal_close"] - 1 > p.get("gap_skip", 0.05):
+                notes.append(f"跳过 {c['name']}：开盘涨幅 {b['open'] / c['signal_close'] - 1:+.1%} > 5%"); continue
+            px = minute_price(c["code"], date); proxy = px is None
+            px = b["close"] if proxy else px
+            up = round(c["signal_close"] * (1 + limit_pct(c["code"]) / 100), 2)
+            if px > c["max_buy"]:
+                notes.append(f"跳过 {c['name']}：14:30 价 {px} > 最高买价 {c['max_buy']}"); continue
+            if px >= up - 0.005:
+                notes.append(f"跳过 {c['name']}：封涨停不可买"); continue
+            q = int(nav_prev * p.get("position", 0.10) / c["max_buy"] / 100) * 100
+            amt = q * px; cost_total = amt + fees(amt, False)
+            if q == 0 or cost_total > cash:
+                notes.append(f"跳过 {c['name']}：现金不足"); continue
+            return c, px, proxy, q, cost_total
+        return None
+
+    chain = L.get("pending_buy", [])
+    rv = L.get("review") or {}
+    reviewed = rv.get("status") == "已复核"
+    vetoed = [c for c in chain if (c.get("review") or {}).get("decision") == "否决"]
+    for c in vetoed:
+        log.append(f"复核否决 {c['code']} {c['name']}：{c['review'].get('reason', '')}")
+    live = [c for c in chain if c not in vetoed]
+    pick = first_fill(live, L["cash"], log)
+    if pick:
+        c, px, proxy, q, cost_total = pick
         L["cash"] -= cost_total
         L["positions"].append(dict(code=c["code"], name=c["name"], date=date, qty=q, cost=px,
-                                   cost_total=round(cost_total, 2), type=c["type"]))
-        log.append(f"买入 {c['code']} {c['name']} {q}股 @{px}{'（收盘代理）' if proxy else '（14:30分时）'}【{c['type']}】【{c['layer']}】")
-        break
-    else:
-        if L.get("pending_buy"):
-            log.append("顺延链全部失效：必开失效，已记录")
+                                   cost_total=round(cost_total, 2), type=c["type"],
+                                   review="已复核" if reviewed else "未复核"))
+        log.append(f"买入 {c['code']} {c['name']} {q}股 @{px}{'（收盘代理）' if proxy else '（14:30分时）'}"
+                   f"【{c['type']}】【{c['layer']}】【{'已复核' if reviewed else '未复核，按公式执行'}】")
+    elif chain:
+        log.append("顺延链全部失效（或全部被复核否决）：当日不买，已记录")
+    # 复核效果记账：公式本来会买的那只 vs 实际买的那只（evolve.py 每周统计后续收益）
+    if chain:
+        mech = first_fill(chain, L["cash"] + (pick[4] if pick else 0), [])
+        with open(os.path.join(lab.ROOT, "data", "review_log.csv"), "a", newline="") as f:
+            w = csv.writer(f)
+            if f.tell() == 0:
+                w.writerow(["date", "studio", "reviewed", "mech_code", "mech_name", "mech_px",
+                            "pick_code", "pick_name", "pick_px", "vetoed"])
+            w.writerow([date, s, int(reviewed), mech[0]["code"] if mech else "", mech[0]["name"] if mech else "",
+                        mech[1] if mech else "", pick[0]["code"] if pick else "", pick[0]["name"] if pick else "",
+                        pick[1] if pick else "", " ".join(c["code"] for c in vetoed)])
     L["pending_buy"] = []
+    L["review"] = None
     # 3) 收盘盯市
     mv = 0.0
     for h in L["positions"]:
@@ -131,7 +162,11 @@ def write_md(s, L):
                   f"{(last - h['cost']) * h['qty']:+.0f} | {h.get('type', '')} |")
     md += ["", "## 待执行（下一交易日）"]
     md += [f"- 开盘卖出 {o['code']} {o['name']}（{o['reason']}）" for o in L.get("pending_sell", [])]
+    rv = L.get("review") or {}
+    if L.get("pending_buy"):
+        md.append(f"- 个股复核：{rv.get('status', '待复核')}" + (f"（{rv.get('time')}）{rv.get('summary', '')}" if rv.get("time") else ""))
     md += [f"- 14:30 买入顺延链 {k}. {c['code']} {c['name']} 最高买价 {c['max_buy']}【{c['type']}】【{c['layer']}】"
+           + (f" 复核：{c['review']['decision']}（{c['review'].get('reason', '')}）" if c.get("review") else "")
            for k, c in enumerate(L.get("pending_buy", []), 1)] or []
     md += ["", "## v3 成交", "", "| 买入日 | 代码 | 名称 | 买价 | 卖出日 | 卖价 | 盈亏 | 原因 |", "|---|---|---|---|---|---|---|---|"]
     md += [f"| {t['buy_date']} | {t['code']} | {t['name']} | {t['buy']} | {t['sell_date']} | {t['sell']} | {t['pnl']:+.2f} | {t['exit_reason']} |"

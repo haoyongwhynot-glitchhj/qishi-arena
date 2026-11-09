@@ -10,4 +10,5 @@ LOG=../reports/job_$(TZ=Asia/Shanghai date +%F).log
     echo "== evolve"; python3 evolve.py && python3 daily.py
   fi
   python3 site.py
+  python3 notify.py
 } >> "$LOG" 2>&1

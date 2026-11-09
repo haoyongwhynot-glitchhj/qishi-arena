@@ -88,7 +88,7 @@ def studio_data(s, idx, all_trades, quotes):
                 previous=g.get("previous"), memory=g.get("negative_memory_bank", []),
                 testing=g.get("hypothesis_in_testing", []), as_of=L["as_of"], cash=L["cash"], nav=L["nav"],
                 ret=ret, hs300=hs, excess=None if hs is None else ret - hs, mdd=mdd, score=S,
-                positions=positions, pending_sell=L.get("pending_sell", []), pending_buy=L.get("pending_buy", []),
+                review=L.get("review"), positions=positions, pending_sell=L.get("pending_sell", []), pending_buy=L.get("pending_buy", []),
                 nav_history=navu, trades=tr, stats=stats(tr), pool=pool, scores_date=os.path.basename(score_files[-1])[:10] if score_files else None,
                 shadow=shadow,
                 studio_md=md.render(read(os.path.join(ROOT, "studios", s, "STUDIO.md"))),

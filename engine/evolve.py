@@ -34,9 +34,41 @@ def lessons(studio):
     return out[:10]
 
 
+def review_stats(hold=5):
+    """个股复核是否加分：只统计“复核后实际买的 ≠ 公式本来会买的”那些日子，比较两只此后 hold 日的收益。"""
+    import data
+    path = os.path.join(lab.ROOT, "data", "review_log.csv")
+    if not os.path.exists(path):
+        return ["- 暂无复核记录"]
+    rows = [r for r in csv.DictReader(open(path)) if r["reviewed"] == "1"]
+    changed, out = [r for r in rows if r["mech_code"] != r["pick_code"]], []
+
+    def fwd(code, d, px):
+        if not code or not px:
+            return 0.0  # 当天不买 = 收益 0
+        bs = [b for b in data.load_bars(code) if b["date"] >= d]
+        if len(bs) < 2:
+            return None
+        return bs[min(hold, len(bs) - 1)]["close"] / float(px) - 1
+
+    diffs = []
+    for r in changed:
+        a, b = fwd(r["pick_code"], r["date"], r["pick_px"]), fwd(r["mech_code"], r["date"], r["mech_px"])
+        if a is not None and b is not None:
+            diffs.append(a - b)
+            out.append(f"  - {r['date']} {r['studio']}：复核买 {r['pick_name'] or '不买'} {a:+.2%}，公式会买 {r['mech_name'] or '无'} {b:+.2%}")
+    head = [f"- 已复核 {len(rows)} 次；改变了买入结果 {len(changed)} 次；可评估 {len(diffs)} 次"]
+    if diffs:
+        win = sum(d > 0 for d in diffs)
+        head.append(f"- 复核相对公式的平均{hold}日收益差 {sum(diffs) / len(diffs):+.2%}，复核更好 {win}/{len(diffs)} 次")
+        head.append("- 判定：" + ("样本不足20次，继续观察" if len(diffs) < 20 else
+                                 ("复核有效，保留" if sum(diffs) > 0 else "复核未跑赢公式，建议取消复核")))
+    return head + out[-15:]
+
+
 def run(dry=False):
     today = datetime.date.today().isoformat()
-    report = [f"# 进化周报 {today}（程序生成）", ""]
+    report = [f"# 进化周报 {today}（程序生成）", "", "## 个股复核效果（方案A）", ""] + review_stats() + [""]
     for s in "ABCDE":
         gpath = os.path.join(lab.ROOT, "studios", s, "genome.json")
         g = json.load(open(gpath))

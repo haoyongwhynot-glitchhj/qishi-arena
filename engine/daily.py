@@ -127,6 +127,8 @@ def run(fetch=False):
                                       layer="新批" if layer == 0 else "老池")
                                  for sc, x, sig, ver, auto, layer in chain]
         ledger.pop("pending_exits", None)
+        # 个股复核（方案A）：计划生成后为“待复核”；复核写入后为“已复核”；到执行时仍未复核则按公式执行
+        ledger["review"] = dict(status="待复核" if ledger["pending_buy"] else "无需复核", plan_date=date)
         json.dump(ledger, open(os.path.join(ROOT, "studios", s, "ledger.json"), "w"), ensure_ascii=False, indent=1)
         lines += [f"## {s} {g['name']}（genome {g['version']}）", "",
                   f"- 池子：{len(pool)} 只；本次删除 {len(removed)} 只" + (

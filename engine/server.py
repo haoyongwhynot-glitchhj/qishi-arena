@@ -76,6 +76,8 @@ class H(SimpleHTTPRequestHandler):
             return self._json(403, {"error": "口令错误"})
         if self.path == "/api/pool":
             return self.pool(req)
+        if self.path == "/api/review":
+            return self.review(req)
         if self.path == "/api/note":
             text = str(req.get("text", "")).strip()[:2000]
             if not text:
@@ -124,6 +126,43 @@ class H(SimpleHTTPRequestHandler):
         rebuild(not trading_hours)
         when = "今晚收盘计划" if trading_hours else "下一交易日计划（已开始重算）"
         return self._json(200, {"message": f"{s}组批次 {batch}：新增 {added} 只、重新入池 {renewed} 只，入池日 {entry}，用于{when}"})
+
+    def review(self, req):
+        """个股复核写回：{"studio","summary","items":[{"code","decision":"同意|否决","reason"}],"order":[代码…可选]}
+        只能对当前顺延链里的股票下结论；order 只能重排，不能加入链外股票。"""
+        s = str(req.get("studio", ""))
+        if s not in list("ABCDE"):
+            return self._json(400, {"error": "组别须为 A-E"})
+        now = datetime.datetime.now(CN)
+        if now.weekday() < 5 and "14:25" <= now.strftime("%H:%M") < "15:30":
+            return self._json(409, {"error": "14:25 以后不再接受当日复核（执行窗口已开始）"})
+        path = os.path.join(ROOT, "studios", s, "ledger.json")
+        with LOCK:
+            L = json.load(open(path))
+            chain = L.get("pending_buy", [])
+            codes = {c["code"]: c for c in chain}
+            items = req.get("items") or []
+            bad = [str(it.get("code")) for it in items if str(it.get("code")) not in codes
+                   or it.get("decision") not in ("同意", "否决")]
+            if bad:
+                return self._json(400, {"error": f"不在顺延链或结论无效：{'、'.join(bad)}"})
+            for it in items:
+                codes[str(it["code"])]["review"] = dict(decision=it["decision"], reason=str(it.get("reason", ""))[:300],
+                                                        time=now.strftime("%Y-%m-%d %H:%M"))
+            order = [str(c) for c in (req.get("order") or [])]
+            if order:
+                if sorted(order) != sorted(codes):
+                    return self._json(400, {"error": "order 必须是当前顺延链全部代码的重新排列"})
+                L["pending_buy"] = [codes[c] for c in order]
+            L["review"] = dict(status="已复核", plan_date=(L.get("review") or {}).get("plan_date"),
+                               time=now.strftime("%Y-%m-%d %H:%M"), summary=str(req.get("summary", ""))[:1000])
+            json.dump(L, open(path, "w"), ensure_ascii=False, indent=1)
+            with open(os.path.join(ROOT, "data", "reviews.jsonl"), "a") as f:
+                f.write(json.dumps(dict(time=L["review"]["time"], studio=s, plan_date=L["review"]["plan_date"],
+                                        summary=L["review"]["summary"], items=items, order=order), ensure_ascii=False) + "\n")
+        rebuild(False)
+        n_veto = sum(1 for it in items if it["decision"] == "否决")
+        return self._json(200, {"message": f"{s}组复核已保存：{len(items)} 只有结论，否决 {n_veto} 只"})
 
     def log_message(self, fmt, *args):
         sys.stderr.write("%s %s\n" % (self.address_string(), fmt % args))
