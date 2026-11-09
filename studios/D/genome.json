@@ -1,0 +1,40 @@
+{
+ "studio": "D",
+ "name": "主力红箭头5日",
+ "version": "v3.1",
+ "updated": "2026-11-09",
+ "params": {
+  "must_open": true,
+  "position": 0.1,
+  "max_buy": 1.03,
+  "max_buy_prev_lu": 1.01,
+  "exit": "ma5",
+  "stop": 0.95,
+  "new_batch_first": true,
+  "gap_skip": 0.05,
+  "mcap_min": 70,
+  "mode": "divergence"
+ },
+ "previous": {
+  "version": "v3.0",
+  "params": {
+   "must_open": true,
+   "position": 0.1,
+   "max_buy": 1.03,
+   "max_buy_prev_lu": 1.01,
+   "exit": "ma5",
+   "stop": 0.95,
+   "new_batch_first": true,
+   "gap_skip": 0.05,
+   "mcap_min": 70
+  }
+ },
+ "hypothesis_in_testing": [
+  "exit=ma5_confirm",
+  "exit=ma10",
+  "take_profit=10%"
+ ],
+ "negative_memory_bank": [
+  "退出原因[MA5]：7笔，亏损5笔，合计-1729元"
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "as_of": "2026-11-09",
+ "cash": 82164.8,
+ "nav": 99850.8,
+ "positions": [
+  {
+   "code": "688349",
+   "name": "三一重能",
+   "date": "2026-11-05",
+   "qty": 600,
+   "cost": 14.91,
+   "cost_total": 8951.0
+  },
+  {
+   "code": "301301",
+   "name": "川宁生物",
+   "date": "2026-11-06",
+   "qty": 1100,
+   "cost": 8.11,
+   "cost_total": 8926.0
+  }
+ ],
+ "pending_sell": [],
+ "pending_buy": [
+  {
+   "code": "002611",
+   "name": "东方精工",
+   "signal_close": 14.73,
+   "max_buy": 15.17,
+   "score": 93.8,
+   "type": "自主",
+   "layer": "老池"
+  },
+  {
+   "code": "001308",
+   "name": "康冠科技",
+   "signal_close": 21.99,
+   "max_buy": 22.65,
+   "score": 87.5,
+   "type": "自主",
+   "layer": "老池"
+  }
+ ]
+}

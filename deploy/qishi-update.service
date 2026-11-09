@@ -1,0 +1,8 @@
+[Unit]
+Description=Qishi arena self-update from GitHub
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/qishi-arena/deploy/update.sh
+TimeoutStartSec=600

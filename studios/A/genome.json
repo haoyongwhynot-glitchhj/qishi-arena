@@ -1,0 +1,42 @@
+{
+ "studio": "A",
+ "name": "董事长池",
+ "version": "v3.1",
+ "updated": "2026-11-09",
+ "params": {
+  "must_open": true,
+  "position": 0.1,
+  "max_buy": 1.03,
+  "exit": "ma5_confirm",
+  "stop": 0.95,
+  "v5_20_min": 1.3,
+  "new_batch_first": true,
+  "gap_skip": 0.05,
+  "mcap_min": 70,
+  "take_profit": 0.1
+ },
+ "previous": {
+  "version": "v3.0",
+  "params": {
+   "must_open": true,
+   "position": 0.1,
+   "max_buy": 1.03,
+   "exit": "ma5_confirm",
+   "stop": 0.95,
+   "v5_20_min": 1.3,
+   "new_batch_first": true,
+   "gap_skip": 0.05,
+   "mcap_min": 70
+  }
+ },
+ "hypothesis_in_testing": [
+  "exit=ma5",
+  "exit=ma10",
+  "hold_max=5",
+  "不买信号日涨停股",
+  "只做自主开仓(取消必开)"
+ ],
+ "negative_memory_bank": [
+  "退出原因[硬止损]：3笔，亏损3笔，合计-967元"
+ ]
+}

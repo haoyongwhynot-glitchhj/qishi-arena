@@ -1,0 +1,9 @@
+[Unit]
+Description=Run qishi job on trading days 15:45 Beijing time
+
+[Timer]
+OnCalendar=Mon..Fri 15:45 Asia/Shanghai
+Persistent=true
+
+[Install]
+WantedBy=timers.target

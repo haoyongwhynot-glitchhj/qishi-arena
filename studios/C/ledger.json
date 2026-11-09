@@ -1,0 +1,90 @@
+{
+ "as_of": "2026-11-09",
+ "cash": 74953.0,
+ "nav": 99803.0,
+ "positions": [
+  {
+   "code": "600884",
+   "name": "杉杉股份",
+   "date": "2026-11-04",
+   "qty": 900,
+   "cost": 10.82,
+   "cost_total": 9743.0
+  },
+  {
+   "code": "002294",
+   "name": "信立泰",
+   "date": "2026-11-05",
+   "qty": 300,
+   "cost": 31.58,
+   "cost_total": 9479.0
+  },
+  {
+   "code": "001280",
+   "name": "中国铀业",
+   "date": "2026-11-06",
+   "qty": 100,
+   "cost": 58.2,
+   "cost_total": 5825.0
+  }
+ ],
+ "pending_sell": [
+  {
+   "code": "600884",
+   "name": "杉杉股份",
+   "reason": "MA5"
+  },
+  {
+   "code": "002294",
+   "name": "信立泰",
+   "reason": "MA5"
+  }
+ ],
+ "pending_buy": [
+  {
+   "code": "000983",
+   "name": "山西焦煤",
+   "signal_close": 6.48,
+   "max_buy": 6.67,
+   "score": 96.4,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "002001",
+   "name": "新和成",
+   "signal_close": 26.0,
+   "max_buy": 26.78,
+   "score": 95.3,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "600456",
+   "name": "宝钛股份",
+   "signal_close": 25.85,
+   "max_buy": 26.63,
+   "score": 82.3,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "600038",
+   "name": "中直股份",
+   "signal_close": 28.6,
+   "max_buy": 29.46,
+   "score": 81.2,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "688027",
+   "name": "国盾量子",
+   "signal_close": 305.89,
+   "max_buy": 315.07,
+   "score": 81.2,
+   "type": "强制",
+   "layer": "老池"
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "studio": "B",
+ "name": "克劳德主力红柱",
+ "version": "v3.1",
+ "updated": "2026-11-09",
+ "params": {
+  "must_open": false,
+  "position": 0.1,
+  "max_buy": 1.03,
+  "exit": "ma5",
+  "stop": 0.95,
+  "new_batch_first": true,
+  "gap_skip": 0.05,
+  "mcap_min": 70
+ },
+ "previous": {
+  "version": "v3.0",
+  "params": {
+   "must_open": true,
+   "position": 0.1,
+   "max_buy": 1.03,
+   "exit": "ma5",
+   "stop": 0.95,
+   "new_batch_first": true,
+   "gap_skip": 0.05,
+   "mcap_min": 70
+  }
+ },
+ "hypothesis_in_testing": [
+  "exit=ma5_confirm",
+  "exit=ma10",
+  "hold_max=5",
+  "不买信号日涨停股",
+  "红柱收紧(5日涨幅≤10%,量比≥1.5)"
+ ],
+ "negative_memory_bank": []
+}

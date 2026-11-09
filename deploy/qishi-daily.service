@@ -1,0 +1,9 @@
+[Unit]
+Description=Qishi arena daily settle/plan/evolve
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=qishi
+ExecStart=/bin/bash /opt/qishi-arena/deploy/job.sh
+TimeoutStartSec=3600

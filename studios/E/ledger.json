@@ -1,0 +1,111 @@
+{
+ "as_of": "2026-11-09",
+ "cash": 52427.25,
+ "nav": 98628.25,
+ "positions": [
+  {
+   "code": "300146",
+   "name": "汤臣倍健",
+   "date": "2026-10-27",
+   "qty": 900,
+   "cost": 9.92,
+   "cost_total": 8933.0
+  },
+  {
+   "code": "002511",
+   "name": "中顺洁柔",
+   "date": "2026-10-29",
+   "qty": 1300,
+   "cost": 7.33,
+   "cost_total": 9534.0
+  },
+  {
+   "code": "601117",
+   "name": "中国化学",
+   "date": "2026-11-02",
+   "qty": 1300,
+   "cost": 7.12,
+   "cost_total": 9261.0
+  },
+  {
+   "code": "000591",
+   "name": "太阳能",
+   "date": "2026-11-04",
+   "qty": 2000,
+   "cost": 4.46,
+   "cost_total": 8925.0
+  },
+  {
+   "code": "300201",
+   "name": "海伦哲",
+   "date": "2026-11-06",
+   "qty": 800,
+   "cost": 10.85,
+   "cost_total": 8685.0
+  }
+ ],
+ "pending_sell": [
+  {
+   "code": "300146",
+   "name": "汤臣倍健",
+   "reason": "MA5"
+  },
+  {
+   "code": "601117",
+   "name": "中国化学",
+   "reason": "MA5"
+  },
+  {
+   "code": "000591",
+   "name": "太阳能",
+   "reason": "MA5"
+  }
+ ],
+ "pending_buy": [
+  {
+   "code": "603112",
+   "name": "XD华翔股",
+   "signal_close": 16.24,
+   "max_buy": 16.73,
+   "score": 72.0,
+   "type": "自主",
+   "layer": "新批"
+  },
+  {
+   "code": "002583",
+   "name": "海能达",
+   "signal_close": 8.38,
+   "max_buy": 8.63,
+   "score": 70.8,
+   "type": "自主",
+   "layer": "新批"
+  },
+  {
+   "code": "600498",
+   "name": "烽火通信",
+   "signal_close": 28.83,
+   "max_buy": 29.69,
+   "score": 69.6,
+   "type": "自主",
+   "layer": "新批"
+  },
+  {
+   "code": "603626",
+   "name": "科森科技",
+   "signal_close": 28.98,
+   "max_buy": 29.85,
+   "score": 68.5,
+   "type": "自主",
+   "layer": "新批"
+  },
+  {
+   "code": "300418",
+   "name": "昆仑万维",
+   "signal_close": 40.13,
+   "max_buy": 41.33,
+   "score": 67.3,
+   "type": "自主",
+   "layer": "新批"
+  }
+ ]
+}

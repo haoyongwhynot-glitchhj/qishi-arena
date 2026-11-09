@@ -1,0 +1,101 @@
+{
+ "as_of": "2026-11-09",
+ "cash": 70984.31,
+ "nav": 98407.31,
+ "positions": [
+  {
+   "code": "601900",
+   "name": "南方传媒",
+   "date": "2026-10-28",
+   "qty": 300,
+   "cost": 14.75,
+   "cost_total": 4430.0
+  },
+  {
+   "code": "001400",
+   "name": "江顺科技",
+   "date": "2026-11-02",
+   "qty": 100,
+   "cost": 95.8,
+   "cost_total": 9585.0
+  },
+  {
+   "code": "600020",
+   "name": "中原高速",
+   "date": "2026-11-03",
+   "qty": 1100,
+   "cost": 4.32,
+   "cost_total": 4757.0
+  },
+  {
+   "code": "002275",
+   "name": "桂林三金",
+   "date": "2026-11-05",
+   "qty": 200,
+   "cost": 17.35,
+   "cost_total": 3475.0
+  },
+  {
+   "code": "300049",
+   "name": "福瑞医疗",
+   "date": "2026-11-06",
+   "qty": 100,
+   "cost": 47.82,
+   "cost_total": 4787.0
+  }
+ ],
+ "pending_sell": [
+  {
+   "code": "600020",
+   "name": "中原高速",
+   "reason": "MA5确认"
+  }
+ ],
+ "pending_buy": [
+  {
+   "code": "000410",
+   "name": "沈阳机床",
+   "signal_close": 5.5,
+   "max_buy": 5.67,
+   "score": 76.4,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "000591",
+   "name": "太阳能",
+   "signal_close": 4.45,
+   "max_buy": 4.58,
+   "score": 73.6,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "002773",
+   "name": "康弘药业",
+   "signal_close": 23.45,
+   "max_buy": 24.15,
+   "score": 70.8,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "600986",
+   "name": "浙文互联",
+   "signal_close": 7.52,
+   "max_buy": 7.75,
+   "score": 68.1,
+   "type": "强制",
+   "layer": "老池"
+  },
+  {
+   "code": "688585",
+   "name": "上纬新材",
+   "signal_close": 216.02,
+   "max_buy": 222.5,
+   "score": 66.7,
+   "type": "强制",
+   "layer": "老池"
+  }
+ ]
+}

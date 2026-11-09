@@ -1,0 +1,264 @@
+{
+ "生产": {
+  "delta": {},
+  "train": {
+   "ret": -0.0677,
+   "mdd": 0.0941,
+   "n": 156,
+   "win": 0.2308,
+   "avg_win": 459.9,
+   "avg_loss": -195.8432,
+   "payoff": 2.3483
+  },
+  "valid": {
+   "ret": -0.0942,
+   "mdd": 0.0956,
+   "n": 65,
+   "win": 0.2308,
+   "avg_win": 147.6627,
+   "avg_loss": -224.1632,
+   "payoff": 0.6587
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  }
+ },
+ "exit=ma5_confirm": {
+  "delta": {
+   "exit": "ma5_confirm"
+  },
+  "train": {
+   "ret": -0.1211,
+   "mdd": 0.1468,
+   "n": 152,
+   "win": 0.25,
+   "avg_win": 522.1789,
+   "avg_loss": -278.7087,
+   "payoff": 1.8736
+  },
+  "valid": {
+   "ret": -0.1066,
+   "mdd": 0.1067,
+   "n": 65,
+   "win": 0.2769,
+   "avg_win": 220.5622,
+   "avg_loss": -302.1434,
+   "payoff": 0.73
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": false
+ },
+ "exit=ma10": {
+  "delta": {
+   "exit": "ma10"
+  },
+  "train": {
+   "ret": -0.152,
+   "mdd": 0.1587,
+   "n": 156,
+   "win": 0.2244,
+   "avg_win": 496.1151,
+   "avg_loss": -269.0512,
+   "payoff": 1.8439
+  },
+  "valid": {
+   "ret": -0.1127,
+   "mdd": 0.1128,
+   "n": 64,
+   "win": 0.2188,
+   "avg_win": 224.3936,
+   "avg_loss": -279.6624,
+   "payoff": 0.8024
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": false
+ },
+ "hold_max=5": {
+  "delta": {
+   "hold_max": 5
+  },
+  "train": {
+   "ret": -0.086,
+   "mdd": 0.0909,
+   "n": 156,
+   "win": 0.2564,
+   "avg_win": 380.0242,
+   "avg_loss": -206.7087,
+   "payoff": 1.8385
+  },
+  "valid": {
+   "ret": -0.0897,
+   "mdd": 0.0911,
+   "n": 65,
+   "win": 0.2615,
+   "avg_win": 131.33,
+   "avg_loss": -224.4306,
+   "payoff": 0.5852
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": false
+ },
+ "take_profit=10%": {
+  "delta": {
+   "take_profit": 0.1
+  },
+  "train": {
+   "ret": -0.0657,
+   "mdd": 0.0866,
+   "n": 156,
+   "win": 0.2308,
+   "avg_win": 478.9767,
+   "avg_loss": -199.8829,
+   "payoff": 2.3963
+  },
+  "valid": {
+   "ret": -0.0912,
+   "mdd": 0.0925,
+   "n": 65,
+   "win": 0.2308,
+   "avg_win": 168.0527,
+   "avg_loss": -224.1632,
+   "payoff": 0.7497
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": true
+ },
+ "不买信号日涨停股": {
+  "delta": {
+   "skip_signal_lu": true
+  },
+  "train": {
+   "ret": -0.0678,
+   "mdd": 0.0941,
+   "n": 156,
+   "win": 0.2308,
+   "avg_win": 459.9,
+   "avg_loss": -195.968,
+   "payoff": 2.3468
+  },
+  "valid": {
+   "ret": -0.089,
+   "mdd": 0.0904,
+   "n": 65,
+   "win": 0.2615,
+   "avg_win": 131.9206,
+   "avg_loss": -223.3063,
+   "payoff": 0.5908
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": false
+ },
+ "只做自主开仓(取消必开)": {
+  "delta": {
+   "must_open": false
+  },
+  "train": {
+   "ret": -0.0067,
+   "mdd": 0.0671,
+   "n": 120,
+   "win": 0.25,
+   "avg_win": 537.3983,
+   "avg_loss": -188.5393,
+   "payoff": 2.8503
+  },
+  "valid": {
+   "ret": -0.072,
+   "mdd": 0.0734,
+   "n": 48,
+   "win": 0.1875,
+   "avg_win": 160.7033,
+   "avg_loss": -210.7938,
+   "payoff": 0.7624
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": true
+ },
+ "红柱收紧(5日涨幅≤10%,量比≥1.5)": {
+  "delta": {
+   "ret5_max": 0.1,
+   "vr_min": 1.5
+  },
+  "train": {
+   "ret": -0.1122,
+   "mdd": 0.1174,
+   "n": 156,
+   "win": 0.2115,
+   "avg_win": 398.637,
+   "avg_loss": -199.5602,
+   "payoff": 1.9976
+  },
+  "valid": {
+   "ret": -0.0693,
+   "mdd": 0.0735,
+   "n": 65,
+   "win": 0.2923,
+   "avg_win": 144.2326,
+   "avg_loss": -200.9424,
+   "payoff": 0.7178
+  },
+  "real": {
+   "ret": -0.0033,
+   "mdd": 0.0041,
+   "n": 0,
+   "win": 0.0,
+   "avg_win": 0.0,
+   "avg_loss": 0.0,
+   "payoff": NaN
+  },
+  "晋级资格": false
+ }
+}

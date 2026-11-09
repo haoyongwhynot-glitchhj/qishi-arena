@@ -1,0 +1,44 @@
+{
+ "studio": "E",
+ "name": "起爆六六六红",
+ "version": "v3.1",
+ "updated": "2026-11-09",
+ "params": {
+  "must_open": true,
+  "position": 0.1,
+  "max_buy": 1.03,
+  "exit": "ma5",
+  "stop": 0.95,
+  "hot_ret5": 0.2,
+  "hot_mult": 0.8,
+  "new_batch_first": true,
+  "gap_skip": 0.05,
+  "mcap_min": 70,
+  "skip_signal_lu": true
+ },
+ "previous": {
+  "version": "v3.0",
+  "params": {
+   "must_open": true,
+   "position": 0.1,
+   "max_buy": 1.03,
+   "exit": "ma5",
+   "stop": 0.95,
+   "hot_ret5": 0.2,
+   "hot_mult": 0.8,
+   "new_batch_first": true,
+   "gap_skip": 0.05,
+   "mcap_min": 70
+  }
+ },
+ "hypothesis_in_testing": [
+  "exit=ma5_confirm",
+  "exit=ma10",
+  "hold_max=5",
+  "take_profit=10%",
+  "过热降序取消"
+ ],
+ "negative_memory_bank": [
+  "退出原因[MA5]：7笔，亏损7笔，合计-831元"
+ ]
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=Qishi arena dashboard
+After=network.target
+
+[Service]
+User=qishi
+EnvironmentFile=/etc/qishi.env
+WorkingDirectory=/opt/qishi-arena/engine
+ExecStart=/usr/bin/python3 server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

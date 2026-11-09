@@ -1,0 +1,9 @@
+[Unit]
+Description=Check GitHub for qishi updates (before open and before daily job)
+
+[Timer]
+OnCalendar=*-*-* 08:40,15:25 Asia/Shanghai
+Persistent=true
+
+[Install]
+WantedBy=timers.target

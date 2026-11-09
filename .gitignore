@@ -1,0 +1,5 @@
+data/bars/
+site/
+__pycache__/
+backup/
+.version
