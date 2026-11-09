@@ -1,7 +1,8 @@
 """成交结算：按 RULES.md 第三节执行上一交易日签发的指令。
 
 - 卖出：当日开盘价（09:30 分时首价），一字跌停卖不出 → 顺延
-- 买入：当日 14:30 分时价（拿不到分时数据则用收盘价，并标注“收盘代理”）；沿顺延链只买 1 只
+- 买入：当日 14:30 分时价（腾讯分时，只能当天取；当天没取到——例如结算延误或接口失败——就用当日收盘价代理，
+  并在持仓的 fill_src 字段、台账和看板上标注“收盘代理”）；沿顺延链只买 1 只
 - 收盘：盯市、记净值（含沪深300基准，基准起点 2026-10-09 收盘）
 用法：python3 settle.py [YYYY-MM-DD]
 """
@@ -9,7 +10,6 @@ import csv
 import json
 import os
 import sys
-import urllib.request
 
 import data
 import lab
@@ -19,19 +19,9 @@ from sim import fees
 BASE_DATE = "2026-10-09"
 
 
-def minute_price(code, date, hhmm="14:30"):
-    url = ("https://push2his.eastmoney.com/api/qt/stock/trends2/get?secid={}&fields1=f1&fields2=f51,f53&ndays=5&iscr=0"
-           .format(data.secid(code)))
-    try:
-        with urllib.request.urlopen(url, timeout=15) as r:
-            rows = json.load(r)["data"]["trends"]
-    except Exception:
-        return None
-    for row in rows:
-        t, px = row.split(",")[:2]
-        if t >= f"{date} {hhmm}" and t.startswith(date):
-            return float(px)
-    return None
+def minute_price(code, date):
+    """14:30 分时价（腾讯分时，仅当天可取）。取不到返回 None → 按收盘价代理成交并在台账/看板标注。"""
+    return data.minute_price(code, date, "1430")
 
 
 def bar_on(code, date):
@@ -63,7 +53,8 @@ def settle_studio(s, date, idx):
         L["cash"] += net
         L["positions"].remove(h)
         t = dict(studio=s, code=h["code"], name=h["name"], buy_date=h["date"], buy=h["cost"], qty=h["qty"],
-                 sell_date=date, sell=px, pnl=pnl, exit_reason=order["reason"], entry_type=h.get("type", ""))
+                 sell_date=date, sell=px, pnl=pnl, exit_reason=order["reason"], entry_type=h.get("type", ""),
+                 fill_src=h.get("fill_src", "v3前成交"))
         L["trades"].append(t)
         with open(os.path.join(lab.ROOT, "data", "real_trades.csv"), "a", newline="") as f:
             csv.writer(f).writerow([t[k] for k in ["studio", "code", "name", "buy_date", "buy", "qty", "sell_date",
@@ -111,7 +102,8 @@ def settle_studio(s, date, idx):
         L["cash"] -= cost_total
         L["positions"].append(dict(code=c["code"], name=c["name"], date=date, qty=q, cost=px,
                                    cost_total=round(cost_total, 2), type=c["type"],
-                                   review="已复核" if reviewed else "未复核"))
+                                   review="已复核" if reviewed else "未复核",
+                                   fill_src="收盘代理" if proxy else "14:30分时"))
         log.append(f"买入 {c['code']} {c['name']} {q}股 @{px}{'（收盘代理）' if proxy else '（14:30分时）'}"
                    f"【{c['type']}】【{c['layer']}】【{'已复核' if reviewed else '未复核，按公式执行'}】")
     elif chain:
@@ -155,10 +147,10 @@ def write_md(s, L):
     md = [f"# {s} {g['name']} 台账（截至 {L['as_of']} 收盘，genome {g['version']}）", "",
           f"- 总资产 ¥{L['nav']:,.2f}，累计 {L['nav'] / 1e5 - 1:+.2%}；现金 ¥{L['cash']:,.2f}；本账本记录的最大回撤 {mdd:.2%}",
           "- 2026-11-09 之前的历史成交见 data/real_trades.csv", "", "## 持仓", "",
-          "| 代码 | 名称 | 买入日 | 股数 | 成本 | 现价 | 浮盈亏 | 类型 |", "|---|---|---|---|---|---|---|---|"]
+          "| 代码 | 名称 | 买入日 | 股数 | 成本 | 买入价来源 | 现价 | 浮盈亏 | 类型 |", "|---|---|---|---|---|---|---|---|---|"]
     for h in L["positions"]:
         last = h.get("last", h["cost"])
-        md.append(f"| {h['code']} | {h['name']} | {h['date']} | {h['qty']} | {h['cost']} | {last} | "
+        md.append(f"| {h['code']} | {h['name']} | {h['date']} | {h['qty']} | {h['cost']} | {h.get('fill_src', 'v3前成交')} | {last} | "
                   f"{(last - h['cost']) * h['qty']:+.0f} | {h.get('type', '')} |")
     md += ["", "## 待执行（下一交易日）"]
     md += [f"- 开盘卖出 {o['code']} {o['name']}（{o['reason']}）" for o in L.get("pending_sell", [])]

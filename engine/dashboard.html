@@ -39,7 +39,7 @@ svg text{fill:var(--mute);font-size:11px}.legend{display:flex;gap:14px;flex-wrap
   <nav id="nav"></nav>
 </header>
 <main id="main"></main>
-<div class="footer">模拟盘，数据为日线代理成交，仅供研究，不构成投资建议。</div>
+<div class="footer">模拟盘：卖出按开盘价、买入按 14:30 分时价（取不到时为收盘代理），仅供研究，不构成投资建议。</div>
 <script>
 const D = /*__DATA__*/null;
 const COLORS = {A:"#4ea1ff",B:"#f04848",C:"#22b573",D:"#e3b341",E:"#b48cff",HS:"#8b96a5"};
@@ -194,11 +194,12 @@ function studioPage(s) {
   $("#main").innerHTML = h;
   const tabs = {
     "持仓与指令": el => {
-      el.innerHTML = `<section><h2>当前持仓（${s.positions.length} 只，仓位 ${(s.positions.reduce((a,p)=>a+p.weight,0)*100).toFixed(1)}%）</h2><div id="x1"></div></section>
+      el.innerHTML = `<p class="mute">成交口径：卖出取开盘价；买入取当日 14:30 分时价（腾讯分时，只能当天取），当天没取到时用当日收盘价代理，并标“收盘代理”。</p><section><h2>当前持仓（${s.positions.length} 只，仓位 ${(s.positions.reduce((a,p)=>a+p.weight,0)*100).toFixed(1)}%）</h2><div id="x1"></div></section>
         <section><h2>下一交易日</h2><div class="grid g2"><div class="card"><h3>开盘卖出</h3>${s.pending_sell.length?s.pending_sell.map(o=>`<div>▸ <b>${o.code}</b> ${esc(o.name)} <span class="down">${esc(o.reason)}</span></div>`).join(""):'<span class="mute">无</span>'}</div>
         <div class="card"><h3>14:30 买入顺延链</h3>${rvHead(s)}${s.pending_buy.length?s.pending_buy.map((c,i)=>`<div>${i+1}. <b>${c.code}</b> ${esc(c.name)} 最高买价 ${c.max_buy}（信号收盘 ${c.signal_close}） <span class="tag ${c.type=='自主'?'auto':'force'}">${c.type}</span><span class="tag ${c.layer=='新批'?'new':''}">${c.layer}</span> 综合${c.score} ${rvTag(c)}</div>`).join(""):'<span class="mute">不开仓</span>'}</div></div></section>`;
       el.querySelector("#x1").append(table("p", [["代码","code"],["名称","name"],["买入日","date"],["股数","qty"],["成本","cost"],["现价","last"],["市值","mv",r=>num(r.mv)],["仓位","weight",r=>pct(r.weight,1)],
-        ["浮盈亏","pnl",r=>sgn(r.pnl)],["浮盈亏%","pnl_pct",r=>pct(r.pnl_pct)],["止损价","",r=>num(r.cost*(s.params.stop||.95))],["类型","type"]], s.positions));
+        ["浮盈亏","pnl",r=>sgn(r.pnl)],["浮盈亏%","pnl_pct",r=>pct(r.pnl_pct)],["止损价","",r=>num(r.cost*(s.params.stop||.95))],["类型","type"],
+        ["买入价来源","fill_src",r=>r.fill_src==="收盘代理"?'<span class="tag force">收盘代理</span>':r.fill_src?`<span class="tag auto">${esc(r.fill_src)}</span>`:'<span class="mute">v3前成交</span>'],["复核","review"]], s.positions));
     },
     "成交记录": el => {
       el.innerHTML = `<section><h2>已平仓成交（${s.trades.length} 笔）</h2><div id="x2"></div></section><section><h2>按退出原因</h2><div id="x3"></div></section>`;
@@ -231,7 +232,7 @@ function go(k) {
   if (s) studioPage(s); else { PAGES[k](); location.hash = k; }
   window.scrollTo(0,0);
 }
-$("#meta").innerHTML = `数据截至 ${D.as_of} · 沪深300 ${num(D.hs300_now)}（自${D.base} ${pct(D.hs300_ret)}）· 生成于 ${D.generated}`;
+$("#meta").innerHTML = `行情：腾讯 · 数据截至 ${D.as_of} · 沪深300 ${num(D.hs300_now)}（自${D.base} ${pct(D.hs300_ret)}）· 生成于 ${D.generated}`;
 for (const k of order) { const b=document.createElement("button"); b.dataset.k=k; const s=D.studios.find(x=>x.id===k); b.innerHTML = s?`<span style="color:${COLORS[k]}">●</span> ${k} ${esc(s.name)}`:k; b.onclick=()=>go(k); $("#nav").append(b); }
 go(decodeURIComponent(location.hash.slice(1).split("/")[0]) || "总览");
 if (!order.includes(decodeURIComponent(location.hash.slice(1).split("/")[0]))) go("总览");
