@@ -1,0 +1,24 @@
+{====== 龙头首次分歧 观察池（盘后选出，次日看竞价）======}
+{说明：不支持 ZTPRICE 时把 ZT 一行改为 ZT:=C/REF(C,1)>=1+ZF-0.003;  CAPITAL 单位为“手”，请在本机版本核对。
+ 次日人工确认：竞价高开主板2~6%、20cm 3~10%，开盘后突破分歧日最高价买；跌破分歧日最低价止损。}
+ZF:=IF(CODELIKE('30') OR CODELIKE('68'),0.2,
+    IF(CODELIKE('8') OR CODELIKE('4') OR CODELIKE('92'),0.3,0.1));
+ZTJ:=ZTPRICE(REF(C,1),ZF);
+ZT:=C>=ZTJ-0.001 AND C>REF(C,1);
+HS:=V/MAX(CAPITAL,1)*100;
+ZFU:=(H-L)/MAX(REF(C,1),0.01);
+LTSZ:=C*CAPITAL*100/100000000;
+
+YZ:=ZT AND ZFU<=ZF*0.4;
+
+FQ_ZT:=ZT AND (ZFU>=ZF*0.6 OR HS>=REF(HS,1)*1.8);
+FQ_DB:=NOT(ZT) AND C>=REF(C,1)*(1-0.3*ZF)
+       AND ZFU>=ZF*0.6
+       AND (C-L)/MAX(H-L,0.01)>=0.4;
+FQ:=FQ_ZT OR FQ_DB;
+
+SC:=REF(YZ,1) AND REF(YZ,2);
+
+XG:NOT(NAMEINCLUDE('ST')) AND SC AND FQ
+   AND HS<=IF(ZF>0.1,45,30)
+   AND LTSZ>=30;
